@@ -63,7 +63,7 @@ public class EmployeeReport {
                     .average()
                     .orElse(0);
 
-            System.out.println("avgSalary :: " + avgSalary);
+            //System.out.println("avgSalary :: " + avgSalary);
             double minSalary = avgSalary * CON_20_PERCENT_FACTOR;
             double maxSalary = avgSalary * CON_50_PERCENT_FACTOR;
 
