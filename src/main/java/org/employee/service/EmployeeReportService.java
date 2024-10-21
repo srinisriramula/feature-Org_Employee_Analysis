@@ -28,33 +28,37 @@ public class EmployeeReportService {
         ClassLoader classLoader = getClass().getClassLoader();
         try (CSVReader reader = new CSVReader(new InputStreamReader(classLoader.getResourceAsStream(fileName)))) {
             List<String[]> allLines = reader.readAll();
+            if (allLines.size() < 1000) {
+                for (int i = 1; i < allLines.size(); i++) {
+                    String[] data = allLines.get(i);
 
-            for (int i = 1; i < allLines.size(); i++) {
-                String[] data = allLines.get(i);
+                    int id = Integer.parseInt(data[0]);
+                    String firstName = data[1];
+                    String lastName = data[2];
+                    double salary = Double.parseDouble(data[3]);
+                    Integer managerId = data[4].isEmpty() ? null : Integer.parseInt(data[4]);
 
-                int id = Integer.parseInt(data[0]);
-                String firstName = data[1];
-                String lastName = data[2];
-                double salary = Double.parseDouble(data[3]);
-                Integer managerId = data[4].isEmpty() ? null : Integer.parseInt(data[4]);
+                    Employee employee = new Employee(id, firstName, lastName, salary, managerId);
+                    employeeMap.put(id, employee); // Employee Map
 
-                Employee employee = new Employee(id, firstName, lastName, salary, managerId);
-                employeeMap.put(id, employee); // Employee Map
-
-                // Managers map with reporting employees
-                if (managerId != null) {
-                    if (managerToEmployeeMap.containsKey(managerId)) {
-                        List<Employee> employeeList = managerToEmployeeMap.get(managerId);
-                        employeeList.add(employee);
-                    } else {
-                        List<Employee> employeeList = new ArrayList<>(0);
-                        employeeList.add(employee);
-                        managerToEmployeeMap.put(managerId, employeeList);
+                    // Managers map with reporting employees
+                    if (managerId != null) {
+                        if (managerToEmployeeMap.containsKey(managerId)) {
+                            List<Employee> employeeList = managerToEmployeeMap.get(managerId);
+                            employeeList.add(employee);
+                        } else {
+                            List<Employee> employeeList = new ArrayList<>(0);
+                            employeeList.add(employee);
+                            managerToEmployeeMap.put(managerId, employeeList);
+                        }
                     }
                 }
+                employeeManagerMaps = new EmployeeManagerMaps(employeeMap, managerToEmployeeMap);
+            } else {
+                System.out.println("Number of rows can't exceed 1000");
             }
-            employeeManagerMaps = new EmployeeManagerMaps(employeeMap, managerToEmployeeMap);
         }
+
         return employeeManagerMaps;
     }
 
@@ -84,9 +88,9 @@ public class EmployeeReportService {
 
                 if (manager.getSalary() < minSalary || manager.getSalary() > maxSalary) {
                     //System.out.println("Manager " + manager + " earns out of range ("
-                     //       + minSalary + " - " + maxSalary + ")");
+                    //       + minSalary + " - " + maxSalary + ")");
 
-                    if (manager.getSalary() < minSalary) { //managers earn less than they should
+                    if (manager.getSalary() <= minSalary) { //managers earn less than they should
                         //System.out.println("Manager " + manager + " earns  " + (minSalary - manager.getSalary()) + " less as supposed to 22");
                         lessEarnedEmployeesList.put(manager, (minSalary - manager.getSalary()));
                     } else if (manager.getSalary() > maxSalary) { //managers earn more than they should
