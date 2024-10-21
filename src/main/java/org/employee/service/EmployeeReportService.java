@@ -18,7 +18,7 @@ public class EmployeeReportService {
 
     private static final double CON_20_PERCENT_FACTOR = 1.2;
     private static final double CON_50_PERCENT_FACTOR = 1.5;
-    private static final int CON_MAX_REPORTING_LINES = 2;
+    private static final int CON_MAX_REPORTING_LINES = 4;
 
     // Read the CSV file and construct the Employee objects map and Manager Map who is reporting to them
     public EmployeeManagerMaps readAndPrepareEmployeesMap(String fileName) throws IOException, CsvException {
@@ -83,15 +83,15 @@ public class EmployeeReportService {
                 maxSalary = avgSalary * CON_50_PERCENT_FACTOR;
 
                 if (manager.getSalary() < minSalary || manager.getSalary() > maxSalary) {
-                    System.out.println("Manager " + manager + " earns out of range ("
-                            + minSalary + " - " + maxSalary + ")");
+                    //System.out.println("Manager " + manager + " earns out of range ("
+                     //       + minSalary + " - " + maxSalary + ")");
 
                     if (manager.getSalary() < minSalary) { //managers earn less than they should
-                        System.out.println("Manager " + manager + " earns  " + (minSalary - manager.getSalary()) + " less as supposed to 22");
+                        //System.out.println("Manager " + manager + " earns  " + (minSalary - manager.getSalary()) + " less as supposed to 22");
                         lessEarnedEmployeesList.put(manager, (minSalary - manager.getSalary()));
                     } else if (manager.getSalary() > maxSalary) { //managers earn more than they should
                         moreEarnedEmployeesList.put(manager, (manager.getSalary() - maxSalary));
-                        System.out.println("Manager " + manager + " earns  " + (manager.getSalary() - maxSalary) + " more as supposed to 22");
+                        //System.out.println("Manager " + manager + " earns  " + (manager.getSalary() - maxSalary) + " more as supposed to 22");
                     }
                 }
             }
@@ -110,7 +110,7 @@ public class EmployeeReportService {
                 reportingCount = countManagers(employee, employeeManagerMaps);
                 if (reportingCount > CON_MAX_REPORTING_LINES) {
                     //System.out.println("Employee " + employee + " has more than 4 managers above. 22");
-                    longReportingEmployeesList.put(employee, reportingCount);
+                    longReportingEmployeesList.put(employee, (reportingCount - CON_MAX_REPORTING_LINES));
                 }
             }
         }
